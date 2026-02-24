@@ -1,0 +1,183 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2 class="dash-title">📊 My Dashboard</h2>
+
+<!-- ⭐ CURRENT BADGE DISPLAY -->
+<div class="badge-section">
+    {% if badge %}
+        <span class="badge" style="background: {{ badge_color }};">
+            {{ badge }}
+        </span>
+    {% else %}
+        <span class="badge" style="background: #777;">
+            No Badge Yet
+        </span>
+    {% endif %}
+</div>
+
+
+{% if reports|length == 0 %}
+    <p style="text-align:center; margin-top:20px;color:#0e3c7e;">You have no reports yet. Upload handwriting to begin!</p>
+    <div style="text-align:center;">
+        <a href="/upload" class="btn-primary">Upload Now</a>
+    </div>
+{% else %}
+
+<!-- USER BADGE -->
+<div class="badge-section">
+    <span class="badge {{ badge_color }}">{{ badge_name }}</span>
+
+    <div class="badge-info-wrapper">
+        <span class="badge-info-icon" onclick="openBadgeInfo()">ℹ️</span>
+        <p class="badge-progress">
+            You need {{ remaining }} more uploads to reach <strong>{{ next_badge }}</strong>.
+        </p>
+    </div>
+</div>
+
+
+<!-- STATS CARDS -->
+<h3 class="sub-title">📈 Handwriting Statistics</h3>
+
+<div class="dash-cards">
+
+    <div class="dash-card">
+        <h3>Total Reports</h3>
+        <p class="dash-number">{{ total_reports }}</p>
+    </div>
+
+    <div class="dash-card">
+        <h3>Average Overall</h3>
+        <p class="dash-number">{{ avg_overall | round(1) }}%</p>
+    </div>
+
+    <div class="dash-card">
+        <h3>Best Score</h3>
+        <p class="dash-number">{{ best_overall }}%</p>
+    </div>
+
+    <div class="dash-card">
+        <h3>Worst Score</h3>
+        <p class="dash-number">{{ worst_overall }}%</p>
+    </div>
+
+    <div class="dash-card">
+        <h3>Improvement</h3>
+        <p class="dash-number">{{ improvement | round(2) }}%</p>
+    </div>
+
+</div>
+
+
+<!-- AI SUGGESTIONS -->
+<h3 class="sub-title">🤖 AI Suggestions for You</h3>
+
+<ul class="suggestion-list">
+{% for s in suggestions %}
+    <li>{{ s }}</li>
+{% endfor %}
+</ul>
+
+
+<!-- CHARTS -->
+
+<div class="chart-card">
+    <h3>📉 Overall Score Progress</h3>
+    <canvas id="overallChart"></canvas>
+</div>
+
+<div class="chart-card">
+    <h3>📊 Handwriting Metrics Trend</h3>
+    <canvas id="metricsChart"></canvas>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+// DATA FROM FLASK
+const dates = {{ dates | tojson }};
+const overall = {{ overall_scores | tojson }};
+const neatness = {{ neatness_scores | tojson }};
+const spacing = {{ spacing_scores | tojson }};
+const consistency = {{ consistency_scores | tojson }};
+
+// CHART 1
+new Chart(document.getElementById("overallChart"), {
+    type: "line",
+    data: {
+        labels: dates,
+        datasets: [{
+            label: "Overall Score",
+            data: overall,
+            borderColor: "#4a3cf0",
+            borderWidth: 3,
+            pointRadius: 4
+        }]
+    }
+});
+
+// CHART 2
+new Chart(document.getElementById("metricsChart"), {
+    type: "line",
+    data: {
+        labels: dates,
+        datasets: [
+            { label: "Neatness", data: neatness, borderColor: "#3f51b5", borderWidth: 2 },
+            { label: "Spacing", data: spacing, borderColor: "#4caf50", borderWidth: 2 },
+            { label: "Consistency", data: consistency, borderColor: "#f44336", borderWidth: 2 }
+        ]
+    }
+});
+    })
+</script>
+
+<!-- Badge Information Popup -->
+<div id="badgeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeBadgeInfo()">&times;</span>
+        <h2>🏅 Badge Levels Explained</h2>
+
+        <div class="badge-info-row">
+            <span class="badge-sample" style="background:#0275d8;">Beginner</span>
+            <p>Starting your handwriting journey. Keep practicing!</p>
+        </div>
+
+        <div class="badge-info-row">
+            <span class="badge-sample" style="background:#5cb85c;">Intermediate</span>
+            <p>Consistent improvement in letters, spacing, and alignment.</p>
+        </div>
+
+        <div class="badge-info-row">
+            <span class="badge-sample" style="background:#f0ad4e;">Advanced</span>
+            <p>Strong handwriting control with stable line alignment.</p>
+        </div>
+
+        <div class="badge-info-row">
+            <span class="badge-sample" style="background:#d9534f;">Expert</span>
+            <p>Excellent handwriting quality maintained across all samples.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+function openBadgeInfo() {
+    document.getElementById("badgeModal").style.display = "block";
+}
+
+function closeBadgeInfo() {
+    document.getElementById("badgeModal").style.display = "none";
+}
+
+// Close when clicking outside the modal
+window.onclick = function(event) {
+    let modal = document.getElementById("badgeModal");
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Handwriting Analysis Result</h2>
+
+<!-- Original Image -->
+<h3>Original Image:</h3>
+<img src="/{{ image_path }}" width="400">
+
+<!-- Processed Image -->
+<h3>Processed Image:</h3>
+<img src="/{{ processed_image }}" width="400">
+
+<!-- Extracted Features -->
+{% if lang == 'english' %}
+<h3>Extracted Features:</h3>
+<ul>
+    <li>Slant Angle: {{ features.slant_angle }}°</li>
+    <li>Stroke Thickness: {{ features.stroke_thickness }}</li>
+    <li>Average Letter Height: {{ features.avg_letter_height }}</li>
+    <li>Average Word Spacing: {{ features.avg_spacing }}</li>
+</ul>
+{% endif %}
+
+<!-- AI Scores -->
+{% if lang == 'english' %}
+<h3>AI Scores:</h3>
+<ul>
+    <li>Neatness: {{ scores.neatness }}%</li>
+    <li>Spacing: {{ scores.spacing }}%</li>
+    <li>Consistency: {{ scores.consistency }}%</li>
+    <li><strong>Overall Score: {{ scores.overall }}%</strong></li>
+</ul>
+{% endif %}
+
+{% if lang == 'devanagari' %}
+<h3>Devanagari Handwriting Analysis</h3>
+<ul>
+    <li>Shirorekha Strength: {{ scores.shirorekha }}%</li>
+    <li>Matra Clarity Score: {{ scores.matra }}%</li>
+    <li>Letter Height Consistency: {{ scores.consistency }}%</li>
+    <li><b>Overall Handwriting Score: {{ scores.overall }}%</b></li>
+</ul>
+{% endif %}
+
+<h3>Feedback:</h3>
+<ul>
+    {% for fb in feedback %}
+    <li>{{ fb }}</li>
+    {% endfor %}
+</ul>
+
+
+<!-- Chart Visualization -->
+<h3>Score Visualization</h3>
+
+<canvas id="scoreChart" width="400" height="250"></canvas>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const ctx = document.getElementById('scoreChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Neatness', 'Spacing', 'Consistency', 'Overall'],
+            datasets: [{
+                label: 'Handwriting Score (%)',
+                data: [
+                    {{ scores['neatness'] }},
+                    {{ scores['spacing'] }},
+                    {{ scores['consistency'] }},
+                    {{ scores['overall'] }}
+                ],
+                backgroundColor: [
+                    "rgba(0, 0, 0, 0.7)",
+                    "rgba(0, 0, 0, 0.7)",
+                    "rgba(0, 0, 0, 0.7)",
+                    "rgba(0, 0, 0, 0.7)"
+                ],
+                borderColor: "black",
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+
+});
+</script>
+
+
+<!-- ✅ PDF BUTTON (Correct Version) -->
+{% if report_id %}
+<br><br>
+<a href="{{ url_for('download_report', report_id=report_id) }}"
+   style="padding: 10px 20px; 
+          background: black; 
+          color: white; 
+          text-decoration: none; 
+          border-radius: 5px;">
+   Download PDF Report
+</a>
+{% endif %}
+
+<br><br>
+
+<!--Worksheets -->
+<h3>Practice Worksheets</h3>
+<p>Download recommended worksheets based on your weak areas:</p>
+
+{% if lang == 'english' %}
+
+    {% if scores['neatness'] < 60 %}
+    <a href="/worksheet/neatness" class="btn btn-primary">Neatness Worksheet</a><br><br>
+    {% endif %}
+
+<br>
+
+    {% if scores['spacing'] < 60 %}
+    <a href="/worksheet/spacing" class="btn btn-primary">Spacing Worksheet</a><br><br>
+    {% endif %}
+
+<br>
+
+    {% if scores['consistency'] < 60 %}
+    <a href="/worksheet/consistency" class="btn btn-primary">Consistency Worksheet</a><br><br>
+    {% endif %}
+
+{% endif %}
+<br>
+
+{% if lang == 'devanagari' %}
+
+    {% if scores['shirorekha'] < 60 %}
+    <a href="/worksheet/devanagari/shirorekha" class="btn btn-primary">शिरोरेखा अभ्यास (Shirorekha Practice) Worksheet</a><br><br>
+    {% endif %}
+    {% if scores['matra'] < 60 %}
+    <a href="/worksheet/devanagari/matra" class="btn btn-primary">मात्रा अभ्यास (Matra Practice) Worksheet</a><br><br>
+    {% endif %}
+
+    {% if scores['samanta'] < 60 %}
+    <a href="/worksheet/devanagari/samanta" class="btn btn-primary">समानता (Consistency) Worksheet</a><br><br>
+    {% endif %}
+
+<br>
+{% endif %}
+
+<!-- Upload again button -->
+<a class="btn" href="{{ url_for('upload_file') }}">Upload Another Sample</a>
+
+
+{% endblock %}

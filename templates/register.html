@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Register</h2>
+
+<form method="POST">
+
+    <input type="text" name="name" placeholder="Name" required><br><br>
+    <input type="email" name="email" placeholder="Email" required><br><br>
+
+    <!-- Password -->
+    <div style="position: relative; margin-bottom: 15px;">
+        <input type="password" name="password" placeholder="Password" id="password" required 
+               style="padding-right:40px;">
+
+        <svg onclick="togglePassword('password', 'eye1')" 
+             id="eye1"
+             xmlns="http://www.w3.org/2000/svg" 
+             width="22" height="22" fill="gray"
+             viewBox="0 0 16 16"
+             style="position:absolute; top:50%; transform:translateY(-50%); cursor:pointer;">
+            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"/>
+            <circle cx="8" cy="8" r="3" fill="white"/>
+        </svg>
+    </div>
+
+    <!-- Confirm Password -->
+    <div style="position: relative; margin-bottom: 20px;">
+        <input type="password" name="confirm_password" placeholder="Confirm Password" id="confirm_password" required 
+               style="padding-right:40px;">
+
+        <svg onclick="togglePassword('confirm_password', 'eye2')" 
+             id="eye2"
+             xmlns="http://www.w3.org/2000/svg" 
+             width="22" height="22" fill="gray"
+             viewBox="0 0 16 16"
+             style="position:absolute; top:50%; transform:translateY(-50%); cursor:pointer;">
+            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"/>
+            <circle cx="8" cy="8" r="3" fill="white"/>
+        </svg>
+    </div>
+
+    <button class="btn" type="submit">Register</button>
+</form>
+
+<script>
+function togglePassword(inputId, eyeId) {
+    const pwd = document.getElementById(inputId);
+    const eye = document.getElementById(eyeId);
+
+    if (pwd.type === "password") {
+        pwd.type = "text";
+
+        eye.outerHTML = `
+        <svg onclick="togglePassword('${inputId}', '${eyeId}')" 
+             id="${eyeId}"
+             xmlns="http://www.w3.org/2000/svg" 
+             width="22" height="22" fill="gray"
+             viewBox="0 0 16 16"
+             style="position:absolute; top:50%; transform:translateY(-50%); cursor:pointer;">
+            <path d="M13.359 11.238C14.552 10.09 15.5 8.613 15.5 8s-3-5.5-7.5-5.5c-.956 0-1.843.184-2.64.51l1.04 1.04c.5-.166 1.04-.25 1.6-.25 4 0 6.5 4.2 6.5 4.2s-.84 1.54-2.29 2.89z"/>
+            <line x1="2" y1="2" x2="14" y2="14" stroke="gray" stroke-width="2"/>
+        </svg>`;
+    } else {
+        pwd.type = "password";
+
+        eye.outerHTML = `
+        <svg onclick="togglePassword('${inputId}', '${eyeId}')" 
+             id="${eyeId}"
+             xmlns="http://www.w3.org/2000/svg" 
+             width="22" height="22" fill="gray"
+             viewBox="0 0 16 16"
+             style="position:absolute; top:50%; transform:translateY(-50%); cursor:pointer;">
+            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8z"/>
+            <circle cx="8" cy="8" r="3" fill="white"/>
+        </svg>`;
+    }
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2 class="dash-title">My Analysis Reports</h2>
+<p style="text-align:center; color:#444;">Here are all your handwriting analysis reports.</p>
+
+{% if reports|length == 0 %}
+    <p style="text-align:center; margin-top:20px;">No reports yet.</p>
+    <div style="text-align:center;">
+        <a href="/upload" class="btn btn-primary">Upload Your First Sample</a>
+    </div>
+
+{% else %}
+
+<div class="reports-container">
+
+    {% for r in reports %}
+    <div class="report-card">
+
+        <h3 class="report-date">{{ r.date }}</h3>
+
+        <div class="report-scores">
+            <p><strong>Overall:</strong> {{ r.overall }}%</p>
+            <p><strong>Neatness:</strong> {{ r.neatness }}%</p>
+            <p><strong>Spacing:</strong> {{ r.spacing }}%</p>
+            <p><strong>Consistency:</strong> {{ r.consistency }}%</p>
+        </div>
+
+        <div class="report-buttons">
+            <a class="btn-outline" href="/{{ r.image_path }}" target="_blank">View Image</a>
+            <a class="btn-outline" 
+               href="{{ url_for('result', filename=r.image_path.split('/')[-1], lang=r.language) }}">
+               View Report
+            </a>
+            <a class="btn-outline" href="/download_report/{{ r.id }}">Download PDF</a>
+        </div>
+
+        <div class="worksheet-section">
+            <h4>Recommended Worksheets</h4>
+            {% if r.weak_areas %}
+                {% for w in r.weak_areas %}
+                    {% if r.language == 'english' %}
+                        <a href="{{ url_for('open_worksheet', filename=w) }}" target="_blank" class="worksheet-btn">
+                    {% else %}
+                        <a href="{{ url_for('devanagari_worksheet', file=w) }}" target="_blank" class="worksheet-btn">
+                    {% endif %}
+                        {{ w }}
+                    </a><br>
+                {% endfor %}
+            {% else %}
+                <p style="color:#888;">No Worksheets</p>
+            {% endif %}
+        </div>
+
+        <form action="/delete_report/{{ r.id }}" method="POST"
+              onsubmit="return confirm('Delete this report?');">
+            <button class="delete-btn" type="submit">Delete</button>
+        </form>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+{% endif %}
+{% endblock %}

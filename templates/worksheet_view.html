@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Your Practice Worksheet</h2>
+
+<img src="/{{ worksheet }}" style="width:80%; border:2px solid black;">
+
+<br><br>
+
+<a href="/{{ worksheet }}" download class="btn btn-success">
+    Download Worksheet
+</a>
+
+{% endblock %}

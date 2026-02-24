@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Handwriting Improvement</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <header>
+    <h1 style="margin: 10;color: #c6dbfc;">🖋️ AI Handwriting Improvement</h1>
+     <nav style="padding: 15px; background: #c6dbfc; color: white; display: flex; gap: 25px;">
+    
+    <a href="/" style="color:#0e3c7e; text-decoration:none;">Home</a>
+    <a href="/upload" style="color:#0e3c7e; text-decoration:none;">Upload</a>
+
+    {% if session.user_id %}
+        <a href="/reports" style="color:#0e3c7e; text-decoration:none;">My Reports</a>
+	<a href="/dashboard" style="color:#0e3c7e; text-decoration:none;">Dashboard</a>
+
+        <a href="/logout" style="color:#0e3c7e; text-decoration:none;">Logout</a>
+    {% else %}
+        <a href="/login" style="color:#0e3c7e; text-decoration:none;">Login</a>
+        <a href="/register" style="color:#0e3c7e; text-decoration:none;">Register</a>
+    {% endif %}
+</nav>   
+    <hr>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <hr>
+    <p>&copy; AI Handwriting Improvement | Designed by Khushi TYBSc IT</p>
+  </footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</body>
+</html>
